@@ -28,6 +28,7 @@ import org.sbml.jsbml.Compartment;
 import org.sbml.jsbml.Model;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.Species;
+import org.sbml.jsbml.Unit;
 
 /**
  * Tests for the reuse and clash-detection behaviour in {@link ModelBuilder}.
@@ -83,9 +84,8 @@ public class ModelBuilderReuseTest {
 
     ModelBuilder builder = new ModelBuilder(doc);
 
-    // Attempt to create a compartment with the same id.
-    // Our new implementation should detect the clash via findNamedSBase
-    // and throw an IllegalArgumentException.
-    builder.buildCompartment("shared", true, "compartment", 3d, 1.0, "litre");
+    // Expect an IllegalArgumentException since the ID 'shared' is already in use by a Species.
+    
+    builder.buildCompartment("shared", true, "compartment", 3d, 1.0, Unit.Kind.LITRE.name());
   }
 }
