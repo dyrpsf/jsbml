@@ -30,6 +30,7 @@ import org.sbml.jsbml.ext.arrays.validator.constraints.IndexArrayDimCheck;
 import org.sbml.jsbml.ext.arrays.validator.constraints.SBaseWithDimensionCheck;
 import org.sbml.jsbml.validator.SBMLValidator.CHECK_CATEGORY;
 import org.sbml.jsbml.validator.offline.ValidationContext;
+import org.sbml.jsbml.ext.arrays.validator.constraints.SBaseRefIndicesCheck;
 
 /**
  * @author rodrigue
@@ -50,6 +51,7 @@ public class ArraysSBasePluginConstraints extends AbstractConstraintDeclaration 
       set.add(ARRAYS_20104);
       set.add(ARRAYS_20107);
       addRangeToSet(set, ARRAYS_20110, ARRAYS_20111);
+      set.add(ARRAYS_20116);
       break;
     }
     case IDENTIFIER_CONSISTENCY:
@@ -237,6 +239,25 @@ public class ArraysSBasePluginConstraints extends AbstractConstraintDeclaration 
 
             // check in the list of errors that we have the right error             
             return !ArraysUtils.checkListOfErrors(check.getListOfErrors(), ARRAYS_20111);
+          }
+
+          return true;
+        }
+      };
+      break;
+    }
+    case ARRAYS_20116:
+    {
+      func = new ValidationFunction<ArraysSBasePlugin>() {
+        @Override
+        public boolean check(ValidationContext ctx, ArraysSBasePlugin c) {
+
+          SBaseRefIndicesCheck check = new SBaseRefIndicesCheck(c.getExtendedSBase().getModel(), c.getExtendedSBase());
+          check.check();
+
+          if (check.getListOfErrors().size() > 0) {
+            // check in the list of errors that we have the right error             
+            return !ArraysUtils.checkListOfErrors(check.getListOfErrors(), ARRAYS_20116);
           }
 
           return true;
