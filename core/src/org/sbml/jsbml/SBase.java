@@ -1308,4 +1308,29 @@ public interface SBase extends TreeNodeWithChangeSupport {
    */
   public void unsetName();
 
+/**
+   * Initializes the default values of this {@link SBase} instance according
+   * to the specifications of the given SBML Level and Version combination.
+   *
+   * @param level   the SBML Level.
+   * @param version the SBML Version within the Level.
+   */
+  public void initDefaults(int level, int version);
+
+  /**
+   * Initializes the default values of this {@link SBase} instance according
+   * to the specifications of its currently set SBML Level and Version.
+   * <p>
+   * If the Level and Version are not set, this method should have no effect.
+   */
+  public void initDefaults();
+
+  /**
+   * Returns {@code true} if all required attributes for this {@link SBase} 
+   * object have been set.
+   *
+   * @return {@code true} if all required attributes are set, {@code false} otherwise.
+   */
+  public boolean hasRequiredAttributes();
+
 }

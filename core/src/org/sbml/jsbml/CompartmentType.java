@@ -129,7 +129,7 @@ UniqueNamedSBase {
    * this type can actually be used in the defined SBML Level/Version
    * combination.
    */
-  private void initDefaults() {
+  public void initDefaults() {
     if (isSetLevelAndVersion() &&
         ((getLevelAndVersion().compareTo(Integer.valueOf(2), Integer.valueOf(2)) < 0) ||
             (getLevelAndVersion().compareTo(Integer.valueOf(3), Integer.valueOf(1)) >= 0))) {
