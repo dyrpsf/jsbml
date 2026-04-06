@@ -1308,4 +1308,12 @@ public interface SBase extends TreeNodeWithChangeSupport {
    */
   public void unsetName();
 
+  /**
+   * Returns a string that consists of the partial SBML describing this object.
+   * This is primarily provided for testing and debugging purposes.
+   *
+   * @return the XML representation of this element as a String.
+   */
+  public String toSBML();
+
 }

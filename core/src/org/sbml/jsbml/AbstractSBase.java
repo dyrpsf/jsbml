@@ -3423,5 +3423,19 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
     //    }
 
   }
+  
+  /*
+   * (non-Javadoc)
+   * @see org.sbml.jsbml.SBase#toSBML()
+   */
+  @Override
+  public String toSBML() {
+    try {
+      return new org.sbml.jsbml.xml.stax.SBMLWriter().writeToString(this);
+    } catch (Exception e) {
+      logger.error("Could not generate SBML string for " + getElementName(), e);
+      return "";
+    }
+  }
 
 }
