@@ -20,6 +20,7 @@
 package org.sbml.libsbml;
 
 import java.util.LinkedList;
+import java.text.MessageFormat;
 
 import org.sbml.jsbml.ListOf;
 import org.sbml.jsbml.NamedSBase;
@@ -135,6 +136,14 @@ public class ListOfSpecies extends ListOf<org.sbml.jsbml.Species> {
 		
 		registerChild(e);
 		return listOf.add(e);
+	}
+
+	/**
+	 * Returns the libSBML type code for this object.
+	 * @return the libSBML type code for this object.
+	 */
+	public int getTypeCode() {
+		return libsbmlConstants.SBML_LIST_OF;
 	}
 
 	// TODO: overwrite all of the methods if needed !

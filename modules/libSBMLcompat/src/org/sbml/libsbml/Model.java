@@ -121,6 +121,14 @@ public class Model extends org.sbml.jsbml.Model {
 		return listOfSpecies;
 	}
 
+	/**
+	 * Returns the libSBML type code for this object.
+	 * @return the libSBML type code for this object.
+	 */
+	public int getTypeCode() {
+		return libsbmlConstants.SBML_MODEL;
+	}
+
 	// TODO: check and add missing functions
 	
 }
