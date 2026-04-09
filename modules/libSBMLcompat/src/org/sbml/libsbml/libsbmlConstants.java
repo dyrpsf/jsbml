@@ -28,6 +28,7 @@ public interface libsbmlConstants {
 	public final static int SBML_COMPARTMENT = 6;
 	public final static int SBML_LIST_OF = 15;
 	public final static int SBML_MODEL = 16;
+	public final static int SBML_PARAMETER = 17;
 	public final static int SBML_SPECIES = 20;
 	public final static int SBML_DOCUMENT = 41;
 }
