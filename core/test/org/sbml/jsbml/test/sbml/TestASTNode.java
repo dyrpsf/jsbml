@@ -109,33 +109,36 @@ public class TestASTNode {
     node = null;
   }
    */
-  /*
-  // Not supported in JSBML (canonicalize method on ASTNode)
-  public void test_ASTNode_canonicalizeConstants()
-  {
-  ...
-	}
-
-  public void test_ASTNode_canonicalizeFunctions()
-  {
-  ...
-  }
-
-  public void test_ASTNode_canonicalizeFunctionsL1()
-  {
-  ...
-  }
-
-  public void test_ASTNode_canonicalizeLogical()
-  {
-  ...
-  }
-
-  public void test_ASTNode_canonicalizeRelational()
-  {
-  ...
-  }
+  /**
+   * Tests the new canonicalize() method for Issue #120
    */
+  @Test
+  public void test_ASTNode_canonicalize()
+  {
+    // Test canonicalizing a constant
+    ASTNode piNode = new ASTNode(ASTNode.Type.NAME);
+    piNode.setName("pi");
+    piNode.canonicalize();
+    assertTrue(piNode.getType() == ASTNode.Type.CONSTANT_PI);
+
+    // Test canonicalizing a function
+    ASTNode sinNode = new ASTNode(ASTNode.Type.FUNCTION);
+    sinNode.setName("sin");
+    sinNode.canonicalize();
+    assertTrue(sinNode.getType() == ASTNode.Type.FUNCTION_SIN);
+
+    // Test that it recursively fixes children
+    ASTNode root = new ASTNode(ASTNode.Type.PLUS);
+    ASTNode child1 = new ASTNode(ASTNode.Type.NAME);
+    child1.setName("true");
+    root.addChild(child1);
+    
+    // Run canonicalize on the parent
+    root.canonicalize();
+    
+    // Verify the child was fixed automatically
+    assertTrue(root.getChild(0).getType() == ASTNode.Type.CONSTANT_TRUE);
+  }
 
   /**
    * 
