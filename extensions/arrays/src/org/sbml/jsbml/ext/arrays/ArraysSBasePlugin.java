@@ -544,14 +544,39 @@ public class ArraysSBasePlugin extends AbstractSBasePlugin implements IdManager{
 
   /**
    * Gets an element from the listOfDimensions, with the given id.
+   * If the dimension is not found on this object, it recursively 
+   * searches the parent hierarchy (Fix for Issue #133).
    *
    * @param fieldId the id of the {@link Dimension} element to get.
    * @return an element from the listOfDimensions with the given id or {@code null}.
    */
   public Dimension getDimension(String fieldId) {
+    // Check the current object's dimensions first
     if (isSetListOfDimensions()) {
-      return getListOfDimensions().get(fieldId);
+      Dimension dim = getListOfDimensions().get(fieldId);
+      if (dim != null) {
+        return dim;
+      }
     }
+    
+    // If not found locally, traverse up the parent hierarchy!
+    if (isSetExtendedSBase()) {
+      SBase parent = getExtendedSBase().getParentSBMLObject();
+      while (parent != null) {
+        ArraysSBasePlugin parentPlugin = (ArraysSBasePlugin) parent.getExtension(ArraysConstants.shortLabel);
+        
+        if (parentPlugin != null && parentPlugin.isSetListOfDimensions()) {
+          Dimension dim = parentPlugin.getListOfDimensions().get(fieldId);
+          if (dim != null) {
+            return dim;
+          }
+        }
+        // Move one level higher in the tree
+        parent = parent.getParentSBMLObject();
+      }
+    }
+    
+    // Still not found
     return null;
   }
 
