@@ -1344,119 +1344,93 @@ public class CompFlatteningConverter {
 
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfReactions) {
-
-
-/* for(Reaction reaction: targetModel.getListOfReactions()) {
-                for (SpeciesReference specRef : reaction.getListOfProducts()) {
-                    System.out.println("Target SR: " + targetModel.getElementBySId("z_stoich"));
-                }
-            }*/
-
-
             ListOf<Reaction> reactionListOf = sourceModel.getListOfReactions().clone();
             sourceModel.getListOfReactions().removeFromParent();
-
             for (Reaction reaction : reactionListOf) {
+                if (reaction.isSetId() && targetModel.getReaction(reaction.getId()) != null) continue;
                 targetModel.addReaction(reaction.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfCompartments) {
-
             ListOf<Compartment> compartmentListOf = sourceModel.getListOfCompartments().clone();
             sourceModel.getListOfCompartments().removeFromParent();
-
             for (Compartment compartment : compartmentListOf) {
+                if (compartment.isSetId() && targetModel.getCompartment(compartment.getId()) != null) continue;
                 targetModel.addCompartment(compartment.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfConstraints) {
-
             ListOf<Constraint> constraintListOf = sourceModel.getListOfConstraints().clone();
             sourceModel.getListOfConstraints().removeFromParent();
-
             for (Constraint constraint : constraintListOf) {
+                if (constraint.isSetId() && targetModel.getElementBySId(constraint.getId()) != null) continue;
                 targetModel.addConstraint(constraint.clone());
             }
         }
 
-
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfSpecies) {
-
             ListOf<Species> speciesListOf = sourceModel.getListOfSpecies().clone();
             sourceModel.getListOfSpecies().removeFromParent();
-
             for (Species species : speciesListOf) {
+                if (species.isSetId() && targetModel.getSpecies(species.getId()) != null) continue;
                 targetModel.addSpecies(species.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfEvents) {
-
             ListOf<Event> eventListOf = sourceModel.getListOfEvents().clone();
             sourceModel.getListOfEvents().removeFromParent();
-
             for (Event event : eventListOf) {
+                if (event.isSetId() && targetModel.getEvent(event.getId()) != null) continue;
                 targetModel.addEvent(event.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfFunctionDefinitions) {
-
             ListOf<FunctionDefinition> functionalDefinitionsListOf = sourceModel.getListOfFunctionDefinitions().clone();
             sourceModel.getListOfFunctionDefinitions().removeFromParent();
-
             for (FunctionDefinition functionalDefinition : functionalDefinitionsListOf) {
+                if (functionalDefinition.isSetId() && targetModel.getFunctionDefinition(functionalDefinition.getId()) != null) continue;
                 targetModel.addFunctionDefinition(functionalDefinition.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfInitialAssignments) {
-
             ListOf<InitialAssignment> initialAssignmentListOf = sourceModel.getListOfInitialAssignments().clone();
             sourceModel.getListOfInitialAssignments().removeFromParent();
-
             for (InitialAssignment initialAssignment : initialAssignmentListOf) {
+                if (initialAssignment.isSetId() && targetModel.getElementBySId(initialAssignment.getId()) != null) continue;
                 targetModel.addInitialAssignment(initialAssignment.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfParameters) {
-
             ListOf<Parameter> parameterListOf = sourceModel.getListOfParameters().clone();
             sourceModel.getListOfParameters().removeFromParent();
-
             for (Parameter parameter : parameterListOf) {
-
+                if (parameter.isSetId() && targetModel.getParameter(parameter.getId()) != null) continue;
                 targetModel.addParameter(parameter.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfRules) {
-
             ListOf<Rule> ruleListOf = sourceModel.getListOfRules().clone();
             sourceModel.getListOfRules().removeFromParent();
-
             for (Rule rule : ruleListOf) {
+                if (rule.isSetId() && targetModel.getElementBySId(rule.getId()) != null) continue;
                 targetModel.addRule(rule.clone());
             }
         }
 
         if (listOfObjects.getSBaseListType() == ListOf.Type.listOfUnitDefinitions) {
-
             ListOf<UnitDefinition> unitDefinitionListOf = sourceModel.getListOfUnitDefinitions().clone();
             sourceModel.getListOfUnitDefinitions().removeFromParent();
-
             for (UnitDefinition unit : unitDefinitionListOf) {
+                if (unit.isSetId() && targetModel.getUnitDefinition(unit.getId()) != null) continue;
                 targetModel.addUnitDefinition(unit.clone());
             }
-        }
-
-        if (listOfObjects.getSBaseListType() == ListOf.Type.listOfLocalParameters) {
-
-            sourceModel.getLocalParameterCount();
-
         }
 
 
