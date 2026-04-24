@@ -5046,7 +5046,7 @@ public class ASTNode extends AbstractTreeNode {
 			
 			// If it's a known type, update this node!
 			if (specificType != Type.UNKNOWN && specificType != getType()) {
-				setType(specificType);
+				setType(getName()); // Pass the string to ensure values like Double.NaN are initialized
 			}
 		}
 		
