@@ -24,7 +24,6 @@ import java.io.IOException;
 import javax.xml.stream.XMLStreamException;
 
 import org.sbml.jsbml.xml.stax.SBMLReader;
-import org.sbml.jsbml.xml.test.SBML_L2V1Test;
 
 
 /**
@@ -130,7 +129,7 @@ public class SBMLDocument extends org.sbml.jsbml.SBMLDocument {
 	 */
 	public static void main(String[] args) throws XMLStreamException, IOException {
 		
-		String fileName = SBML_L2V1Test.DATA_FOLDER + "/l2v1/BIOMD0000000025.xml";
+		String fileName = "BIOMD0000000025.xml";
 		
 		// These two lines would be code for a org.sbml.libsbml.SBMLReader.readSBMLFile function
 		SBMLReader reader = new SBMLReader();
@@ -156,6 +155,14 @@ public class SBMLDocument extends org.sbml.jsbml.SBMLDocument {
 		listOfSpecies.remove(2);
 		
 		System.out.println("ListOfSpecies size = " + document.getModel().getListOfSpecies().size());
+	}
+
+	/**
+	 * Returns the libSBML type code for this object.
+	 * @return the libSBML type code for this object.
+	 */
+	public int getTypeCode() {
+		return libsbmlConstants.SBML_DOCUMENT;
 	}
 	
 }
