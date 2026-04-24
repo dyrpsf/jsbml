@@ -1201,5 +1201,85 @@ public class SBMLWriter {
       return stream.toString();
     }
   }
+  /**
+   * Writes the given {@link SBase} to an in-memory XML {@link String}.
+   * * @param sbase the {@link SBase} element.
+   * @return the XML representation of the {@link SBase} as a String.
+   * @throws XMLStreamException if any error occur while creating the XML document.
+   * @throws SBMLException if any error is detected.
+   */
+  public String writeToString(SBase sbase) throws XMLStreamException, SBMLException {
+    if (sbase == null) {
+      return "";
+    }
+    if (sbase instanceof SBMLDocument) {
+      return writeSBMLToString((SBMLDocument) sbase);
+    }
+
+    initializePackageParsers();
+
+    StringWriter stream = new StringWriter();
+    WstxOutputFactory factory = new WstxOutputFactory();
+    SMOutputFactory smFactory = new SMOutputFactory(factory);
+    XMLStreamWriter2 streamWriter = smFactory.createStax2Writer(stream);
+
+    SMRootFragment outputDocument = SMOutputFactory.createOutputFragment(streamWriter);
+    
+    String SBMLNamespace = sbase.getNamespace();
+    if (SBMLNamespace == null) {
+      SBMLNamespace = JSBML.getNamespaceFrom(sbase.getLevel(), sbase.getVersion());
+    }
+    
+    SMOutputContext context = outputDocument.getContext();
+    context.setIndentation('\n' + createIndentationString(indentCount), 1, 2);
+    SMNamespace namespace = context.getNamespace(SBMLNamespace);
+    namespace.setPreferredPrefix("");
+
+    SMOutputElement smOutputElement = outputDocument.addElement(namespace, sbase.getElementName());
+
+    SBMLObjectForXML xmlObject = new SBMLObjectForXML();
+    xmlObject.setName(sbase.getElementName());
+    xmlObject.setNamespace(SBMLNamespace);
+    xmlObject.addAttributes(sbase.writeXMLAttributes());
+
+    if (sbase.getDeclaredNamespaces().size() > 0) {
+      for (String prefix : sbase.getDeclaredNamespaces().keySet()) {
+        if (!prefix.equals("xmlns")) {
+          String namespaceURI = sbase.getDeclaredNamespaces().get(prefix);
+          String namespacePrefix = prefix.substring(prefix.indexOf(':') + 1);
+          streamWriter.setPrefix(namespacePrefix, namespaceURI);
+          xmlObject.getAttributes().put(prefix, namespaceURI);
+        }
+      }
+    }
+
+    Iterator<Map.Entry<String, String>> it = xmlObject.getAttributes().entrySet().iterator();
+    while (it.hasNext()) {
+      Entry<String, String> entry = it.next();
+      smOutputElement.addAttribute(entry.getKey(), entry.getValue());
+    }
+
+    int indent = 0;
+    if (sbase.isSetNotes()) {
+      writeNotes(sbase, smOutputElement, streamWriter, SBMLNamespace, indent + indentCount);
+    }
+    if (sbase.isSetAnnotation()) {
+      writeAnnotation(sbase, smOutputElement, streamWriter, indent + indentCount, false);
+    }
+    
+    if (sbase.getChildCount() > 0) {
+      smOutputElement.addCharacters("\n");
+      writeSBMLElements(xmlObject, smOutputElement, streamWriter, sbase, indent + indentCount);
+    }
+
+    try {
+      streamWriter.writeEndDocument();
+      streamWriter.close();
+    } catch (XMLStreamException e) {
+      // Ignored for fragments
+    }
+
+    return stream.toString();
+  }
 
 }

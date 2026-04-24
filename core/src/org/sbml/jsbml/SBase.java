@@ -1332,5 +1332,12 @@ public interface SBase extends TreeNodeWithChangeSupport {
    * @return {@code true} if all required attributes are set, {@code false} otherwise.
    */
   public boolean hasRequiredAttributes();
+  /**
+   * Returns a string that consists of the partial SBML describing this object.
+   * This is primarily provided for testing and debugging purposes.
+   *
+   * @return the XML representation of this element as a String.
+   */
+  public String toSBML();
 
 }

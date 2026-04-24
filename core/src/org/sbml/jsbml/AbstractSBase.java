@@ -33,7 +33,8 @@ import javax.swing.tree.TreeNode;
 import javax.xml.stream.XMLStreamException;
 
 import org.sbml.jsbml.JSBML;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sbml.jsbml.CVTerm.Qualifier;
 import org.sbml.jsbml.ext.AbstractSBasePlugin;
 import org.sbml.jsbml.ext.SBasePlugin;
@@ -89,8 +90,8 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
   /**
    * A logger for this class.
    */
-  private static final transient Logger logger             =
-      Logger.getLogger(AbstractSBase.class);
+  private static final transient Logger logger =
+    LoggerFactory.getLogger(AbstractSBase.class);
 
   /**
    * Generated serial version identifier.
@@ -3456,6 +3457,20 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
     //      System.out.println();
     //    }
 
+  }
+  
+  /*
+   * (non-Javadoc)
+   * @see org.sbml.jsbml.SBase#toSBML()
+   */
+  @Override
+  public String toSBML() {
+    try {
+      return new org.sbml.jsbml.xml.stax.SBMLWriter().writeToString(this);
+    } catch (Exception e) {
+      logger.error("Could not generate SBML string for " + getElementName(), e);
+      return "";
+    }
   }
 
 }

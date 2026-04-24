@@ -81,7 +81,7 @@ public class Compartment {
 	/* (non-Javadoc)
 	 * @see org.sbml.jsbml.AbstractSBase#appendNotes(java.lang.String)
 	 */
-	public void appendNotes(String notes) {
+	public void appendNotes(String notes) throws javax.xml.stream.XMLStreamException {
 		compartment.appendNotes(notes);
 	}
 
@@ -124,7 +124,13 @@ public class Compartment {
 	 * @see org.sbml.jsbml.AbstractSBase#getNotesString()
 	 */
 	public String getNotesString() {
-		return compartment.getNotesString();
+		try {
+			return compartment.getNotesString();
+		} catch (javax.xml.stream.XMLStreamException e) {
+			// The C++ API does not throw checked exceptions, so we swallow this 
+			// and return an empty string if XML serialization fails.
+			return "";
+		}
 	}
 
 	/* (non-Javadoc)
@@ -215,7 +221,7 @@ public class Compartment {
 	/* (non-Javadoc)
 	 * @see org.sbml.jsbml.AbstractSBase#setNotes(java.lang.String)
 	 */
-	public void setNotes(String notes) {
+	public void setNotes(String notes) throws javax.xml.stream.XMLStreamException {
 		compartment.setNotes(notes);
 	}
 
@@ -259,6 +265,14 @@ public class Compartment {
 	 */
 	public void unsetSBOTerm() {
 		compartment.unsetSBOTerm();
+	}
+
+	/**
+	 * Returns the libSBML type code for this object.
+	 * * @return the libSBML type code for this object.
+	 */
+	public int getTypeCode() {
+		return libsbmlConstants.SBML_COMPARTMENT;
 	}
 
 }
