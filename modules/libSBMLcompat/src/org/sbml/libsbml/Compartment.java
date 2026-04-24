@@ -123,8 +123,14 @@ public class Compartment {
 	/* (non-Javadoc)
 	 * @see org.sbml.jsbml.AbstractSBase#getNotesString()
 	 */
-	public String getNotesString() throws javax.xml.stream.XMLStreamException {
-		return compartment.getNotesString();
+	public String getNotesString() {
+		try {
+			return compartment.getNotesString();
+		} catch (javax.xml.stream.XMLStreamException e) {
+			// The C++ API does not throw checked exceptions, so we swallow this 
+			// and return an empty string if XML serialization fails.
+			return "";
+		}
 	}
 
 	/* (non-Javadoc)
