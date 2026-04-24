@@ -5032,4 +5032,28 @@ public class ASTNode extends AbstractTreeNode {
     return plugins;
   }
 
+  /**
+	 * Converts generic NAME or FUNCTION nodes to specific MathML function or 
+	 * constant nodes if their name matches a predefined MathML construct.
+	 * This method recursively traverses the entire AST tree.
+	 */
+	public void canonicalize() {
+		// Check if this node is a generic Name or Function with a valid string
+		if ((getType() == Type.NAME || getType() == Type.FUNCTION) && getName() != null) {
+			
+			// See if the name matches a known MathML constant or function
+			Type specificType = Type.getTypeFor(getName());
+			
+			// If it's a known type, update this node!
+			if (specificType != Type.UNKNOWN && specificType != getType()) {
+				setType(getName()); // Pass the string to ensure values like Double.NaN are initialized
+			}
+		}
+		
+		// Recursively canonicalize all child nodes in the tree
+		for (ASTNode child : getChildren()) {
+			child.canonicalize();
+		}
+	}
+
 }
