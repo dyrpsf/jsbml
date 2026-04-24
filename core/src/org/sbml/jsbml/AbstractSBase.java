@@ -1497,7 +1497,11 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
         ParserManager.getManager().getPackageParser(nameOrUri);
 
     if (packageParser != null) {
-      return extensions.get(packageParser.getPackageName());
+      SBasePlugin plugin = extensions.get(packageParser.getPackageName());
+      if (plugin != null && !nameOrUri.equals(packageParser.getPackageName()) && !nameOrUri.equals(plugin.getElementNamespace())) {
+        return null;
+      }
+      return plugin;
     }
 
     throw new IllegalArgumentException(format(
@@ -1757,6 +1761,9 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
     if (packageParser != null) {
       SBasePlugin plugin = extensions.get(packageParser.getPackageName());
       if (plugin != null) {
+        if (!nameOrUri.equals(packageParser.getPackageName()) && !nameOrUri.equals(plugin.getElementNamespace())) {
+          return null; // Enforces Hemil's requirement that mismatched URIs return null
+        }
         return plugin;
       } else {
         return createPlugin(nameOrUri);
@@ -2071,7 +2078,15 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
         ParserManager.getManager().getPackageParser(nameOrUri);
 
     if (packageParser != null) {
-      return extensions.get(packageParser.getPackageName()) != null;
+      SBasePlugin plugin = extensions.get(packageParser.getPackageName());
+      if (plugin != null) {
+        // Strict check: If a URI was provided instead of a short label, ensure it matches the plugin's namespace
+        if (!nameOrUri.equals(packageParser.getPackageName()) && !nameOrUri.equals(plugin.getElementNamespace())) {
+          return false;
+        }
+        return true;
+      }
+      return false;
     }
 
     throw new IllegalArgumentException(format(
@@ -3081,7 +3096,11 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
         ParserManager.getManager().getPackageParser(nameOrUri);
 
     if (packageParser != null) {
-
+      SBasePlugin plugin = extensions.get(packageParser.getPackageName());
+      if (plugin != null && !nameOrUri.equals(packageParser.getPackageName()) && !nameOrUri.equals(plugin.getElementNamespace())) {
+        return; // Ignore if the URI doesn't match the currently attached version
+      }
+      
       SBasePlugin sbasePlugin =
           extensions.remove(packageParser.getPackageName());
       firePropertyChange(TreeNodeChangeEvent.extension, sbasePlugin, null);
