@@ -1158,7 +1158,7 @@ public class SBMLDocument extends AbstractSBase {
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
   }
 
 

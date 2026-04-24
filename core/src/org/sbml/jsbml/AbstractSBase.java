@@ -3366,6 +3366,40 @@ public abstract class AbstractSBase extends AbstractTreeNode implements SBase {
    * @param sb the SBase
    * @return a map of all the declared namespaces in the SBML tree, visible to the given {@link SBase}.
    */
+
+  /*
+   * (non-Javadoc)
+   * @see org.sbml.jsbml.SBase#initDefaults(int, int)
+   */
+  @Override
+  public void initDefaults(int level, int version) {
+    // There are no default values for the base attributes of SBase.
+    // Subclasses will override this method to set their specific defaults.
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.sbml.jsbml.SBase#initDefaults()
+   */
+  @Override
+  public void initDefaults() {
+    if (isSetLevelAndVersion()) {
+      initDefaults(getLevel(), getVersion());
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.sbml.jsbml.SBase#hasRequiredAttributes()
+   */
+  @Override
+  public boolean hasRequiredAttributes() {
+    if (isIdMandatory() && !isSetId()) {
+      return false;
+    }
+    return true;
+  }
+
   public static HashMap<String, String> getAllDeclaredNamespaces(SBase sb) {
 
     HashMap<String, String> namespaceMap = new HashMap<String, String>();
