@@ -351,9 +351,9 @@ private ASTNode TermLvl2() :
   ASTNode node = null;
 }
 {
-  leftChild = TermLvl3()
+  leftChild = UnaryTerm()
   (
-    < DIVIDE > rightChild = TermLvl3()
+    < DIVIDE > rightChild = UnaryTerm()
     {
       Integer left, right;
       left = getInteger(leftChild);
@@ -372,7 +372,7 @@ private ASTNode TermLvl2() :
         leftChild = node;
       }
     }
-  | < TIMES > rightChild = TermLvl3()
+  | < TIMES > rightChild = UnaryTerm()
     {
       node = new ASTNode('*');
       node.addChild(leftChild);
@@ -382,6 +382,29 @@ private ASTNode TermLvl2() :
   )*
   {
     return leftChild;
+  }
+}
+
+private ASTNode UnaryTerm() :
+{
+  ASTNode node = null;
+}
+{
+  < MINUS > node = UnaryTerm()
+  {
+    ASTNode uiMinus = new ASTNode('-');
+    uiMinus.addChild(node);
+    return uiMinus;
+  }
+| < NOT > node = UnaryTerm()
+  {
+    ASTNode not = new ASTNode(Type.LOGICAL_NOT);
+    not.addChild(node);
+    return not;
+  }
+| node = TermLvl3()
+  {
+    return node;
   }
 }
 
@@ -640,7 +663,9 @@ private ASTNode Primary() throws NumberFormatException :
       vector.addChild(node);
     }
   )*
-  < RIGHT_BRACES >  {	selector.addChild(vector);
+  < RIGHT_BRACES >
+  {
+	selector.addChild(vector);
   }
   ( < LEFT_BRACKET >
     (node = TermLvl1())
@@ -660,18 +685,7 @@ private ASTNode Primary() throws NumberFormatException :
   {
     return vector;
   }
-| < MINUS > node = Primary()
-  {
-    ASTNode uiMinus = new ASTNode('-');
-    uiMinus.addChild(node);
-    return uiMinus;
-  }
-| < NOT > node = TermLvl1()
-  {
-    ASTNode not = new ASTNode(Type.LOGICAL_NOT);
-    not.addChild(node);
-    return not;
-  }
+  
 | < LOG > child = Primary()
   {
     node = new ASTNode(Type.FUNCTION_LN);
