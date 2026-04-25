@@ -32,6 +32,8 @@ import org.sbml.jsbml.Unit;
 
 /**
  * Tests for the reuse and clash-detection behaviour in {@link ModelBuilder}.
+ * 
+ * @author Deepak Yadav
  */
 public class ModelBuilderReuseTest {
 
