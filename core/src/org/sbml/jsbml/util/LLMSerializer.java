@@ -1,5 +1,6 @@
 package org.sbml.jsbml.util;
 
+import java.util.List;
 import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Species;
 import org.sbml.jsbml.Compartment;
@@ -13,7 +14,8 @@ import org.sbml.jsbml.JSBML;
 /**
  * Utility class to serialize complex SBML models into a flat, 
  * token-efficient Markdown format optimized for Large Language Models (LLMs).
- * * @author Deepak Yadav
+ *
+ * @author Deepak Yadav
  */
 public class LLMSerializer {
 
@@ -62,7 +64,6 @@ public class LLMSerializer {
             // Extract the Math using JSBML's native formula parser!
             KineticLaw kl = r.getKineticLaw();
             if (kl != null && kl.isSetMath()) {
-                // This is the magic line that converts the ASTNode tree into a readable math string
                 String mathFormula = JSBML.formulaToString(kl.getMath());
                 md.append("  * Rate Law: `").append(mathFormula).append("`\n");
             }
@@ -79,11 +80,7 @@ public class LLMSerializer {
         Model m = r.getModel();
         
         // Reactants
-        for (int i = 0; i < r.getReactantCount(); i++) {
-            SpeciesReference sr = r.getReactant(i);
-            appendSpeciesReference(eq, m, sr.getSpecies(), sr.getStoichiometry());
-            if (i < r.getReactantCount() - 1) eq.append(" + ");
-        }
+        appendSpeciesReferenceList(eq, m, r.getListOfReactants());
         
         // Arrow
         if (r.isReversible()) {
@@ -97,20 +94,27 @@ public class LLMSerializer {
             eq.append("[");
             for (int i = 0; i < r.getModifierCount(); i++) {
                 ModifierSpeciesReference msr = r.getModifier(i);
-                appendSpeciesReference(eq, m, msr.getSpecies(), 1.0); // Modifiers don't use stoichiometry here
+                appendSpeciesReference(eq, m, msr.getSpecies(), 1.0); 
                 if (i < r.getModifierCount() - 1) eq.append(" + ");
             }
             eq.append("] ");
         }
         
         // Products
-        for (int i = 0; i < r.getProductCount(); i++) {
-            SpeciesReference sr = r.getProduct(i);
-            appendSpeciesReference(eq, m, sr.getSpecies(), sr.getStoichiometry());
-            if (i < r.getProductCount() - 1) eq.append(" + ");
-        }
+        appendSpeciesReferenceList(eq, m, r.getListOfProducts());
         
         return eq.toString();
+    }
+
+    /**
+     * Helper method to iterate over and append lists of SpeciesReferences (Reactants or Products)
+     */
+    private static void appendSpeciesReferenceList(StringBuilder eq, Model m, List<SpeciesReference> srList) {
+        for (int i = 0; i < srList.size(); i++) {
+            SpeciesReference sr = srList.get(i);
+            appendSpeciesReference(eq, m, sr.getSpecies(), sr.getStoichiometry());
+            if (i < srList.size() - 1) eq.append(" + ");
+        }
     }
 
     /**
