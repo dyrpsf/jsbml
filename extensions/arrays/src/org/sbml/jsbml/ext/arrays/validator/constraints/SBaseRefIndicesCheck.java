@@ -14,6 +14,8 @@ import org.sbml.jsbml.validator.offline.factory.SBMLErrorCodes;
 /**
  * Checks that if an SBaseRef points to an array (an object with dimensions),
  * it must have index objects to dereference it to a scalar.
+ * 
+ * @author Deepak Yadav
  */
 public class SBaseRefIndicesCheck extends ArraysConstraint {
 
