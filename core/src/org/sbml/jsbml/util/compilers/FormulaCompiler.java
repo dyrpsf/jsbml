@@ -506,6 +506,12 @@ public class FormulaCompiler extends StringTools implements ASTNodeCompiler {
 
     String term = node.compile(this).toString();
 
+    // Fix for Issue #259: Explicitly enforce brackets for lower-precedence operators 
+    // (DIVIDE, PLUS, MINUS, TIMES) to ensure correct mathematical precedence in power functions.
+    if (node.isOperator() || node.isRelational() || node.isLogical()) {
+      return brackets(term).toString();
+    }
+
     if ((node.isNumber() || node.isString() || node.isFunction()) 
         && (! (node.getType() == ASTNode.Type.FUNCTION_POWER || node.getType() == ASTNode.Type.FUNCTION_REM)))
     {
@@ -513,8 +519,7 @@ public class FormulaCompiler extends StringTools implements ASTNodeCompiler {
     }
 
     // for node.isRelational() and node.isLogical(), we want to put brackets 
-    
-    return term = brackets(term).toString();
+    return brackets(term).toString();
   }
 
   /* (non-Javadoc)
