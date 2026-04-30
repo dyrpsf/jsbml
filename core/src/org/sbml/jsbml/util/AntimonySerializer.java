@@ -17,7 +17,8 @@ public class AntimonySerializer {
     /**
      * Generic router for UI plugins (e.g., Eclipse, IntelliJ, VSCode). 
      * Allows dynamic serialization of any selected SBML component without knowing its specific type.
-     * * @param element The generic SBase element to serialize.
+     * 
+     * @param element The generic SBase element to serialize.
      * @return An Antimony-formatted string, or a comment if the element is unsupported/null.
      */
     public static String toAntimony(SBase element) {
@@ -59,6 +60,8 @@ public class AntimonySerializer {
         }
         ant.append("\n");
 
+        // TODO: Implement Reactions, Rate Rules, Algebraic Rules, and Events mapping
+        // Planned for GSoC 2026: gsoc-sysbio-llm-tools pipeline expansion.
         ant.append("  // Reactions and Advanced Rules serialization to be implemented...\n\n");
         ant.append("end\n");
 
