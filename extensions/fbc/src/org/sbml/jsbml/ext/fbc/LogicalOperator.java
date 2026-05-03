@@ -270,7 +270,7 @@ public abstract class LogicalOperator extends AbstractSBase implements Associati
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = FBCConstants.shortLabel;
   }

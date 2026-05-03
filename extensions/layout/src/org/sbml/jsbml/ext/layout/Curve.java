@@ -259,7 +259,7 @@ public class Curve extends AbstractSBase implements ICurve {
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = LayoutConstants.shortLabel;
   }

@@ -59,7 +59,7 @@ public class GeneProductAssociation extends AbstractNamedSBase implements Unique
   /**
    * Initializes the default values.
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = FBCConstants.shortLabel;
   }
