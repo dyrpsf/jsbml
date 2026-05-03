@@ -707,7 +707,4 @@ public class ExternalModelDefinition extends AbstractNamedSBase
     }
     return connection.getInputStream();
   }
-
-
-  
 }
