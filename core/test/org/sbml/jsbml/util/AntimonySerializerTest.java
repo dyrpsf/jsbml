@@ -10,6 +10,10 @@ import org.sbml.jsbml.SBase;
 import org.sbml.jsbml.Compartment;
 import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Species;
+import org.sbml.jsbml.Reaction;
+import org.sbml.jsbml.SpeciesReference;
+import org.sbml.jsbml.KineticLaw;
+import org.sbml.jsbml.ASTNode;
 
 /**
  * Tests for the {@link AntimonySerializer} Phase 1 LLM utility.
@@ -139,5 +143,63 @@ public class AntimonySerializerTest {
         String result = AntimonySerializer.toAntimony(genericElement);
         
         assertEquals("SBase router should dynamically identify and serialize the compartment", "compartment c1 = 5.0;", result);
+    }
+
+    @Test
+    public void testBasicReactionSerialization() {
+        Reaction r = model.createReaction("J0");
+        r.setReversible(false);
+        r.createReactant(model.createSpecies("S1"));
+        r.createProduct(model.createSpecies("S2"));
+        
+        String result = AntimonySerializer.toAntimony(r);
+        assertEquals("Should serialize basic irreversible reaction", "J0: S1 => S2;", result);
+    }
+
+    @Test
+    public void testComplexReactionSerialization() {
+        Reaction r = model.createReaction("J1");
+        r.setReversible(true);
+        
+        SpeciesReference sr1 = r.createReactant(model.createSpecies("A"));
+        sr1.setStoichiometry(2.0);
+        r.createReactant(model.createSpecies("B"));
+        
+        SpeciesReference sp1 = r.createProduct(model.createSpecies("C"));
+        sp1.setStoichiometry(3.5);
+        
+        String result = AntimonySerializer.toAntimony(r);
+        assertEquals("Should serialize reversible reaction with stoichiometry", "J1: 2 A + B -> 3.5 C;", result);
+    }
+
+    @Test
+    public void testReactionWithKineticLaw() {
+        Reaction r = model.createReaction("J2");
+        r.setReversible(false);
+        r.createReactant(model.createSpecies("S1"));
+        r.createProduct(model.createSpecies("S2"));
+        
+        KineticLaw kl = r.createKineticLaw();
+        ASTNode math = new ASTNode(ASTNode.Type.TIMES);
+        math.addChild(new ASTNode("k"));
+        math.addChild(new ASTNode("S1"));
+        kl.setMath(math);
+        
+        String result = AntimonySerializer.toAntimony(r);
+        assertEquals("Should serialize reaction with kinetic law", "J2: S1 => S2; k*S1;", result);
+    }
+
+    @Test
+    public void testReactionGenericRouting() {
+        Reaction r = model.createReaction("J3");
+        r.setReversible(true);
+        r.createReactant(model.createSpecies("X"));
+        r.createProduct(model.createSpecies("Y"));
+        
+        // Pass it as a generic SBase to simulate a UI plugin click
+        SBase genericElement = r;
+        String result = AntimonySerializer.toAntimony(genericElement);
+        
+        assertEquals("SBase router should dynamically identify and serialize the reaction", "J3: X -> Y;", result);
     }
 }

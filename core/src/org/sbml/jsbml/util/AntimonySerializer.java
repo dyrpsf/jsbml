@@ -4,6 +4,10 @@ import org.sbml.jsbml.SBase;
 import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Species;
 import org.sbml.jsbml.Compartment;
+import org.sbml.jsbml.Reaction;
+import org.sbml.jsbml.SpeciesReference;
+import org.sbml.jsbml.KineticLaw;
+import org.sbml.jsbml.ASTNode;
 
 /**
  * Utility class to serialize SBML models and components into the Antimony scripting language.
@@ -30,6 +34,8 @@ public class AntimonySerializer {
             return toAntimony((Compartment) element);
         } else if (element instanceof Species) {
             return toAntimony((Species) element);
+        } else if (element instanceof Reaction) {
+            return toAntimony((Reaction) element);
         }
         
         return "// Unsupported SBML component for Antimony serialization.";
@@ -60,9 +66,15 @@ public class AntimonySerializer {
         }
         ant.append("\n");
 
-        // TODO: Implement Reactions, Rate Rules, Algebraic Rules, and Events mapping
+        ant.append("  // Reactions\n");
+        for (Reaction r : model.getListOfReactions()) {
+            ant.append("  ").append(toAntimony(r)).append("\n");
+        }
+        ant.append("\n");
+
+        // TODO: Implement Rate Rules, Algebraic Rules, and Events mapping
         // Planned for GSoC 2026: gsoc-sysbio-llm-tools pipeline expansion.
-        ant.append("  // Reactions and Advanced Rules serialization to be implemented...\n\n");
+        ant.append("  // Advanced Rules and Events serialization to be implemented...\n\n");
         ant.append("end\n");
 
         return ant.toString();
@@ -129,6 +141,62 @@ public class AntimonySerializer {
             }
         }
 
+        ant.append(";");
+        return ant.toString();
+    }
+
+    /**
+     * Converts an individual SBML Reaction into an Antimony string.
+     * Handles reactants, products, stoichiometry, reversibility, and kinetic laws.
+     */
+    public static String toAntimony(Reaction r) {
+        if (r == null) return "";
+        StringBuilder ant = new StringBuilder();
+
+        // 1. Reaction ID
+        ant.append(r.getId()).append(": ");
+
+        // 2. Reactants
+        for (int i = 0; i < r.getReactantCount(); i++) {
+            SpeciesReference sr = r.getReactant(i);
+            if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1.0) {
+                // Formatting to remove trailing zeros for clean output (e.g. 2.0 -> 2)
+                ant.append(sr.getStoichiometry() == (long) sr.getStoichiometry() ? 
+                           String.format("%d", (long)sr.getStoichiometry()) : 
+                           String.format("%s", sr.getStoichiometry())).append(" ");
+            }
+            ant.append(sr.getSpecies());
+            if (i < r.getReactantCount() - 1) ant.append(" + ");
+        }
+
+        // 3. Reversibility (Antimony uses -> for reversible, => for irreversible)
+        if (r.isSetReversible() && !r.getReversible()) {
+            ant.append(" => ");
+        } else {
+            ant.append(" -> ");
+        }
+
+        // 4. Products
+        for (int i = 0; i < r.getProductCount(); i++) {
+            SpeciesReference sr = r.getProduct(i);
+            if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1.0) {
+                ant.append(sr.getStoichiometry() == (long) sr.getStoichiometry() ? 
+                           String.format("%d", (long)sr.getStoichiometry()) : 
+                           String.format("%s", sr.getStoichiometry())).append(" ");
+            }
+            ant.append(sr.getSpecies());
+            if (i < r.getProductCount() - 1) ant.append(" + ");
+        }
+
+        // 5. Kinetic Law
+        if (r.isSetKineticLaw()) {
+            KineticLaw kl = r.getKineticLaw();
+            if (kl.isSetMath()) {
+                // Convert ASTNode to a math string
+                ant.append("; ").append(ASTNode.formulaToString(kl.getMath()));
+            }
+        }
+        
         ant.append(";");
         return ant.toString();
     }
