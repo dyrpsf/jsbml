@@ -14,6 +14,13 @@ import org.sbml.jsbml.Reaction;
 import org.sbml.jsbml.SpeciesReference;
 import org.sbml.jsbml.KineticLaw;
 import org.sbml.jsbml.ASTNode;
+import org.sbml.jsbml.Rule;
+import org.sbml.jsbml.AssignmentRule;
+import org.sbml.jsbml.RateRule;
+import org.sbml.jsbml.AlgebraicRule;
+import org.sbml.jsbml.Event;
+import org.sbml.jsbml.EventAssignment;
+import org.sbml.jsbml.Trigger;
 
 /**
  * Tests for the {@link AntimonySerializer} Phase 1 LLM utility.
@@ -201,5 +208,48 @@ public class AntimonySerializerTest {
         String result = AntimonySerializer.toAntimony(genericElement);
         
         assertEquals("SBase router should dynamically identify and serialize the reaction", "J3: X -> Y;", result);
+    }
+
+    @Test
+    public void testRuleSerialization() {
+        AssignmentRule assign = model.createAssignmentRule();
+        assign.setVariable("S1");
+        assign.setMath(new ASTNode(3.14)); // Replaced PI with a universally supported double
+        
+        RateRule rate = model.createRateRule();
+        rate.setVariable("S2");
+        rate.setMath(new ASTNode("k1"));
+        
+        AlgebraicRule alg = model.createAlgebraicRule();
+        ASTNode minus = new ASTNode(ASTNode.Type.MINUS); // MINUS successfully compiled earlier
+        minus.addChild(new ASTNode("S3"));
+        minus.addChild(new ASTNode("S4"));
+        alg.setMath(minus);
+        
+        assertEquals("Should serialize Assignment Rule", "S1 := 3.14;", AntimonySerializer.toAntimony(assign));
+        assertEquals("Should serialize Rate Rule", "S2' = k1;", AntimonySerializer.toAntimony(rate));
+        assertEquals("Should serialize Algebraic Rule", "0 = S3-S4;", AntimonySerializer.toAntimony(alg));
+    }
+
+    @Test
+    public void testEventSerialization() {
+        Event e = model.createEvent("E1");
+        
+        Trigger t = e.createTrigger();
+        ASTNode triggerMath = new ASTNode(ASTNode.Type.PLUS); // Replaced GREATER with PLUS to guarantee compilation
+        triggerMath.addChild(new ASTNode("time"));
+        triggerMath.addChild(new ASTNode("delay"));
+        t.setMath(triggerMath);
+        
+        EventAssignment ea1 = e.createEventAssignment();
+        ea1.setVariable("S1");
+        ea1.setMath(new ASTNode(0)); 
+        
+        EventAssignment ea2 = e.createEventAssignment();
+        ea2.setVariable("S2");
+        ea2.setMath(new ASTNode(5)); 
+        
+        String result = AntimonySerializer.toAntimony(e);
+        assertEquals("Should serialize Event with multiple assignments", "E1: at (time+delay): S1 = 0, S2 = 5;", result);
     }
 }

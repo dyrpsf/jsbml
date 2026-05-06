@@ -8,6 +8,12 @@ import org.sbml.jsbml.Reaction;
 import org.sbml.jsbml.SpeciesReference;
 import org.sbml.jsbml.KineticLaw;
 import org.sbml.jsbml.ASTNode;
+import org.sbml.jsbml.Rule;
+import org.sbml.jsbml.AssignmentRule;
+import org.sbml.jsbml.RateRule;
+import org.sbml.jsbml.AlgebraicRule;
+import org.sbml.jsbml.Event;
+import org.sbml.jsbml.EventAssignment;
 
 /**
  * Utility class to serialize SBML models and components into the Antimony scripting language.
@@ -36,6 +42,10 @@ public class AntimonySerializer {
             return toAntimony((Species) element);
         } else if (element instanceof Reaction) {
             return toAntimony((Reaction) element);
+        } else if (element instanceof Rule) {
+            return toAntimony((Rule) element);
+        } else if (element instanceof Event) {
+            return toAntimony((Event) element);
         }
         
         return "// Unsupported SBML component for Antimony serialization.";
@@ -72,9 +82,18 @@ public class AntimonySerializer {
         }
         ant.append("\n");
 
-        // TODO: Implement Rate Rules, Algebraic Rules, and Events mapping
-        // Planned for GSoC 2026: gsoc-sysbio-llm-tools pipeline expansion.
-        ant.append("  // Advanced Rules and Events serialization to be implemented...\n\n");
+        ant.append("  // Rules\n");
+        for (Rule r : model.getListOfRules()) {
+            ant.append("  ").append(toAntimony(r)).append("\n");
+        }
+        ant.append("\n");
+
+        ant.append("  // Events\n");
+        for (Event e : model.getListOfEvents()) {
+            ant.append("  ").append(toAntimony(e)).append("\n");
+        }
+        ant.append("\n");
+
         ant.append("end\n");
 
         return ant.toString();
@@ -197,6 +216,56 @@ public class AntimonySerializer {
             }
         }
         
+        ant.append(";");
+        return ant.toString();
+    }
+
+    /**
+     * Converts an SBML Rule (Assignment, Rate, or Algebraic) into an Antimony string.
+     */
+    public static String toAntimony(Rule r) {
+        if (r == null || !r.isSetMath()) return "";
+        
+        String math = ASTNode.formulaToString(r.getMath());
+        
+        if (r instanceof AssignmentRule) {
+            return ((AssignmentRule) r).getVariable() + " := " + math + ";";
+        } else if (r instanceof RateRule) {
+            return ((RateRule) r).getVariable() + "' = " + math + ";";
+        } else if (r instanceof AlgebraicRule) {
+            return "0 = " + math + ";";
+        }
+        
+        return "// Unsupported Rule type.";
+    }
+
+    /**
+     * Converts an SBML Event into an Antimony string.
+     */
+    public static String toAntimony(Event e) {
+        if (e == null) return "";
+        StringBuilder ant = new StringBuilder();
+
+        if (e.isSetId()) {
+            ant.append(e.getId()).append(": ");
+        }
+
+        ant.append("at (");
+        if (e.isSetTrigger() && e.getTrigger().isSetMath()) {
+            ant.append(ASTNode.formulaToString(e.getTrigger().getMath()));
+        }
+        ant.append("): ");
+
+        int count = e.getEventAssignmentCount();
+        for (int i = 0; i < count; i++) {
+            EventAssignment ea = e.getEventAssignment(i);
+            ant.append(ea.getVariable()).append(" = ");
+            if (ea.isSetMath()) {
+                ant.append(ASTNode.formulaToString(ea.getMath()));
+            }
+            if (i < count - 1) ant.append(", ");
+        }
+
         ant.append(";");
         return ant.toString();
     }
