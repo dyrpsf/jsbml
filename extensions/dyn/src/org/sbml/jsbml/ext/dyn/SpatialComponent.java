@@ -60,7 +60,7 @@ UniqueNamedSBase {
   /**
    * Initializes custom Class attributes
    * */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = DynConstants.shortLabel;
     variable = null;

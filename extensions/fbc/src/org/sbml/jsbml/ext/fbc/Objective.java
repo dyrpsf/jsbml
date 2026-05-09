@@ -401,7 +401,7 @@ public class Objective extends AbstractNamedSBase implements UniqueNamedSBase {
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = FBCConstants.shortLabel;
   }

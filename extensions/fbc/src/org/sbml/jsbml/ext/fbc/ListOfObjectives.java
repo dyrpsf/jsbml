@@ -88,7 +88,7 @@ public class ListOfObjectives extends ListOf<Objective> {
   /**
    * Initializes default values.
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = FBCConstants.shortLabel;
     setSBaseListType(ListOf.Type.other);

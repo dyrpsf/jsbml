@@ -63,7 +63,7 @@ public class Member extends AbstractNamedSBase  implements UniqueNamedSBase {
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     packageName = GroupsConstants.shortLabel;
     setPackageVersion(-1);
   }

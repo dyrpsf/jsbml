@@ -199,7 +199,7 @@ public abstract class RenderCurveSegment extends AbstractSBase implements Point3
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = RenderConstants.shortLabel;
   }

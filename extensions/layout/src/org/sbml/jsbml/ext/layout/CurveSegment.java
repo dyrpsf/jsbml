@@ -244,7 +244,7 @@ public abstract class CurveSegment extends AbstractSBase {
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = LayoutConstants.shortLabel;
   }

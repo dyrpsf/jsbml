@@ -152,7 +152,7 @@ public class Dimensions extends AbstractNamedSBase implements UniqueNamedSBase {
   /**
    * 
    */
-  private void initDefaults() {
+  public void initDefaults() {
     setPackageVersion(-1);
     packageName = LayoutConstants.shortLabel;
 
