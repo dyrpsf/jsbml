@@ -19,10 +19,12 @@ package org.sbml.jsbml.ext.comp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
@@ -58,6 +60,9 @@ public class ExternalModelDefinition extends AbstractNamedSBase
    * Generated serial version identifier.
    */
   private static final long serialVersionUID = 2005205309846284624L;
+
+  public static final int HTTP_TEMPORARY_REDIRECT = 307;
+  public static final int HTTP_PERMANENT_REDIRECT = 308;
   /**
    * The source of this model (anyURI): Specifies a file as relative or absolute
    * path, URL or URN
@@ -532,7 +537,7 @@ public class ExternalModelDefinition extends AbstractNamedSBase
       logger.info("externalModelDefinition " + getId()
         + " points to an online-resource. Trying to open connection to: "
         + source);
-      InputStream stream = sourceUrl.openStream();
+      InputStream stream = openStreamWithRedirects(sourceUrl);
       externalFile = org.sbml.jsbml.SBMLReader.read(stream);
       externalFile.getSBMLDocument().setLocationURI(sourceUrl.toURI().toString());
       logger.info("Successfully read online source of externalModelDefinition "
@@ -681,5 +686,29 @@ public class ExternalModelDefinition extends AbstractNamedSBase
     }
     sourceURI = sourceUrl.toURI();
     return sourceURI;
+  }
+  
+  /**
+   * Opens an InputStream for the given URL while explicitly following 
+   * HTTP/HTTPS redirects.
+   */
+  private InputStream openStreamWithRedirects(URL url) throws IOException {
+    URLConnection connection = url.openConnection();
+
+    if (connection instanceof HttpURLConnection) {
+      HttpURLConnection httpConn = (HttpURLConnection) connection;
+      httpConn.setInstanceFollowRedirects(true); // Enable basic redirect following
+      int status = httpConn.getResponseCode();
+
+      // Manually handle 301/302 redirects if the protocol changes (e.g., HTTP -> HTTPS)
+      // Manually handle 301/302 redirects if the protocol changes (e.g., HTTP -> HTTPS)
+      if (status == HttpURLConnection.HTTP_MOVED_PERM || 
+        status == HttpURLConnection.HTTP_MOVED_TEMP || 
+        status == HTTP_TEMPORARY_REDIRECT || status == HTTP_PERMANENT_REDIRECT) {
+        String newUrl = httpConn.getHeaderField("Location");
+        return openStreamWithRedirects(new URL(newUrl));
+      }
+    }
+    return connection.getInputStream();
   }
 }
