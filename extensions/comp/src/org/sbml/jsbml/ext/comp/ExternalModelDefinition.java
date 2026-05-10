@@ -60,6 +60,9 @@ public class ExternalModelDefinition extends AbstractNamedSBase
    * Generated serial version identifier.
    */
   private static final long serialVersionUID = 2005205309846284624L;
+
+  public static final int HTTP_TEMPORARY_REDIRECT = 307;
+  public static final int HTTP_PERMANENT_REDIRECT = 308;
   /**
    * The source of this model (anyURI): Specifies a file as relative or absolute
    * path, URL or URN
@@ -698,9 +701,10 @@ public class ExternalModelDefinition extends AbstractNamedSBase
       int status = httpConn.getResponseCode();
 
       // Manually handle 301/302 redirects if the protocol changes (e.g., HTTP -> HTTPS)
+      // Manually handle 301/302 redirects if the protocol changes (e.g., HTTP -> HTTPS)
       if (status == HttpURLConnection.HTTP_MOVED_PERM || 
         status == HttpURLConnection.HTTP_MOVED_TEMP || 
-        status == 307 || status == 308) {
+        status == HTTP_TEMPORARY_REDIRECT || status == HTTP_PERMANENT_REDIRECT) {
         String newUrl = httpConn.getHeaderField("Location");
         return openStreamWithRedirects(new URL(newUrl));
       }
