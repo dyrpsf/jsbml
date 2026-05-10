@@ -140,11 +140,20 @@ public class ExpandFunctionDefinitionConverter implements SBMLConverter {
 
     // Starting the actual conversion
     boolean foundFunctionDefinition = false;
+    int iterationCount = 0;
+    // Max depth of valid nested macros is bounded by the total number of functions.
+    // +1 added as a defensive buffer against off-by-one edge cases during traversal.
+    final int MAX_ITERATIONS = m.getFunctionDefinitionCount() + 1; 
+
     // container for the math to be able to modify it inside the Filter if the top level AST is a functionDefinition
     final List<ASTNode> container = new ArrayList<ASTNode>();
     container.add(math);
 
     do {
+      if (iterationCount++ > MAX_ITERATIONS) {
+        System.err.println("ExpandFunctionDefinitionConverter: Maximum expansion limit reached. Possible infinite recursive loop detected in FunctionDefinitions.");
+        break; // Break out of the loop to prevent application hanging
+      }
 
       List<? extends TreeNode> foundFunctionDefinitions = container.get(0).filter((new Filter() {
 
@@ -160,9 +169,6 @@ public class ExpandFunctionDefinitionConverter implements SBMLConverter {
               if (fd != null) {
                 // We found a FunctionDefinition referenced in a 'ci' mathML element
                 // we need to expand it
-
-                // TODO - test for infinite loop
-                // System.out.println("expandFunctionDefinition - fdNode nb child = " + current.getChildCount());
 
                 if (current.getChildCount() != fd.getArgumentCount()) {
                   System.out.println("expandFunctionDefinition - number of arguments differ, aborting for " + sid);
@@ -278,6 +284,6 @@ public class ExpandFunctionDefinitionConverter implements SBMLConverter {
 
   @Override
   public void setOption(String name, String value) {
-    // TODO Auto-generated method stub
+    // No options are currently supported or required by this specific converter.
   }
 }
