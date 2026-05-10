@@ -141,7 +141,9 @@ public class ExpandFunctionDefinitionConverter implements SBMLConverter {
     // Starting the actual conversion
     boolean foundFunctionDefinition = false;
     int iterationCount = 0;
-    final int MAX_ITERATIONS = 100; // Safeguard against recursive function definitions
+    // Max depth of valid nested macros is bounded by the total number of functions.
+    // +1 added as a defensive buffer against off-by-one edge cases during traversal.
+    final int MAX_ITERATIONS = m.getFunctionDefinitionCount() + 1; 
 
     // container for the math to be able to modify it inside the Filter if the top level AST is a functionDefinition
     final List<ASTNode> container = new ArrayList<ASTNode>();
