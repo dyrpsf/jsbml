@@ -182,7 +182,7 @@ public class AntimonySerializer {
             // Check for Named Stoichiometry (e.g., 'n S2')
             if (sr.isSetId()) {
                 ant.append(sr.getId()).append(" ");
-            } else if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1.0) {
+            } else if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1d) {
                 // Formatting to remove trailing zeros for clean output (e.g. 2.0 -> 2)
                 ant.append(sr.getStoichiometry() == (long) sr.getStoichiometry() ? 
                            String.format("%d", (long)sr.getStoichiometry()) : 
@@ -205,7 +205,7 @@ public class AntimonySerializer {
             
             if (sr.isSetId()) {
                 ant.append(sr.getId()).append(" ");
-            } else if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1.0) {
+            } else if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1d) {
                 ant.append(sr.getStoichiometry() == (long) sr.getStoichiometry() ? 
                            String.format("%d", (long)sr.getStoichiometry()) : 
                            String.format("%s", sr.getStoichiometry())).append(" ");
@@ -272,15 +272,15 @@ public class AntimonySerializer {
 
         // Advanced Event Options
         if (e.isSetPriority() && e.getPriority().isSetMath()) {
-            ant.append(", priority=").append(ASTNode.formulaToString(e.getPriority().getMath()));
+            ant.append(", priority = ").append(ASTNode.formulaToString(e.getPriority().getMath()));
         }
         if (e.isSetTrigger()) {
             org.sbml.jsbml.Trigger t = e.getTrigger();
             if (t.isSetInitialValue() && !t.getInitialValue()) {
-                ant.append(", t0=false");
+                ant.append(", t0 = false");
             }
             if (t.isSetPersistent() && !t.getPersistent()) {
-                ant.append(", persistent=false");
+                ant.append(", persistent = false");
             }
         }
         ant.append(": ");

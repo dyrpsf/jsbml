@@ -285,7 +285,7 @@ public class AntimonySerializerTest {
         ea.setVariable("S1");
         ea.setMath(new ASTNode(0));
         
-        String expected = "E2: at 5 after x, priority=1, t0=false, persistent=false: S1 = 0;";
+        String expected = "E2: at 5 after x, priority = 1, t0 = false, persistent = false: S1 = 0;";
         assertEquals("Should serialize advanced event options", expected, AntimonySerializer.toAntimony(e));
     }
 }
