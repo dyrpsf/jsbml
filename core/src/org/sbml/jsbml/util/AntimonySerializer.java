@@ -166,7 +166,7 @@ public class AntimonySerializer {
 
     /**
      * Converts an individual SBML Reaction into an Antimony string.
-     * Handles reactants, products, stoichiometry, reversibility, and kinetic laws.
+     * Handles reactants, products, named stoichiometry, reversibility, and kinetic laws.
      */
     public static String toAntimony(Reaction r) {
         if (r == null) return "";
@@ -178,7 +178,11 @@ public class AntimonySerializer {
         // 2. Reactants
         for (int i = 0; i < r.getReactantCount(); i++) {
             SpeciesReference sr = r.getReactant(i);
-            if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1.0) {
+            
+            // Check for Named Stoichiometry (e.g., 'n S2')
+            if (sr.isSetId()) {
+                ant.append(sr.getId()).append(" ");
+            } else if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1d) {
                 // Formatting to remove trailing zeros for clean output (e.g. 2.0 -> 2)
                 ant.append(sr.getStoichiometry() == (long) sr.getStoichiometry() ? 
                            String.format("%d", (long)sr.getStoichiometry()) : 
@@ -198,7 +202,10 @@ public class AntimonySerializer {
         // 4. Products
         for (int i = 0; i < r.getProductCount(); i++) {
             SpeciesReference sr = r.getProduct(i);
-            if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1.0) {
+            
+            if (sr.isSetId()) {
+                ant.append(sr.getId()).append(" ");
+            } else if (sr.isSetStoichiometry() && sr.getStoichiometry() != 1d) {
                 ant.append(sr.getStoichiometry() == (long) sr.getStoichiometry() ? 
                            String.format("%d", (long)sr.getStoichiometry()) : 
                            String.format("%s", sr.getStoichiometry())).append(" ");
@@ -241,6 +248,7 @@ public class AntimonySerializer {
 
     /**
      * Converts an SBML Event into an Antimony string.
+     * Supports advanced options including delays, priorities, t0, and persistence.
      */
     public static String toAntimony(Event e) {
         if (e == null) return "";
@@ -250,11 +258,32 @@ public class AntimonySerializer {
             ant.append(e.getId()).append(": ");
         }
 
-        ant.append("at (");
-        if (e.isSetTrigger() && e.getTrigger().isSetMath()) {
+        ant.append("at ");
+        boolean hasTrigger = e.isSetTrigger() && e.getTrigger().isSetMath();
+        boolean hasDelay = e.isSetDelay() && e.getDelay().isSetMath();
+
+        if (hasDelay && hasTrigger) {
+            ant.append(ASTNode.formulaToString(e.getDelay().getMath()));
+            ant.append(" after ");
+            ant.append(ASTNode.formulaToString(e.getTrigger().getMath()));
+        } else if (hasTrigger) {
             ant.append(ASTNode.formulaToString(e.getTrigger().getMath()));
         }
-        ant.append("): ");
+
+        // Advanced Event Options
+        if (e.isSetPriority() && e.getPriority().isSetMath()) {
+            ant.append(", priority = ").append(ASTNode.formulaToString(e.getPriority().getMath()));
+        }
+        if (e.isSetTrigger()) {
+            org.sbml.jsbml.Trigger t = e.getTrigger();
+            if (t.isSetInitialValue() && !t.getInitialValue()) {
+                ant.append(", t0 = false");
+            }
+            if (t.isSetPersistent() && !t.getPersistent()) {
+                ant.append(", persistent = false");
+            }
+        }
+        ant.append(": ");
 
         int count = e.getEventAssignmentCount();
         for (int i = 0; i < count; i++) {

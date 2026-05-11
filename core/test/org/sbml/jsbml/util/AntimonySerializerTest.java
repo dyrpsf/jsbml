@@ -21,6 +21,8 @@ import org.sbml.jsbml.AlgebraicRule;
 import org.sbml.jsbml.Event;
 import org.sbml.jsbml.EventAssignment;
 import org.sbml.jsbml.Trigger;
+import org.sbml.jsbml.Delay;
+import org.sbml.jsbml.Priority;
 
 /**
  * Tests for the {@link AntimonySerializer} Phase 1 LLM utility.
@@ -250,6 +252,40 @@ public class AntimonySerializerTest {
         ea2.setMath(new ASTNode(5)); 
         
         String result = AntimonySerializer.toAntimony(e);
-        assertEquals("Should serialize Event with multiple assignments", "E1: at (time+delay): S1 = 0, S2 = 5;", result);
+        assertEquals("Should serialize Event with multiple assignments", "E1: at time+delay: S1 = 0, S2 = 5;", result);
+    }
+
+    @Test
+    public void testNamedStoichiometry() {
+        Reaction r = model.createReaction("J0");
+        r.setReversible(false);
+        SpeciesReference sr1 = r.createReactant(model.createSpecies("S2"));
+        sr1.setId("n"); // This is the named stoichiometry
+        r.createProduct(model.createSpecies("S3"));
+        
+        assertEquals("Should serialize named stoichiometry", "J0: n S2 => S3;", AntimonySerializer.toAntimony(r));
+    }
+
+    @Test
+    public void testAdvancedEventOptions() {
+        Event e = model.createEvent("E2");
+        
+        Trigger t = e.createTrigger();
+        t.setMath(new ASTNode("x"));
+        t.setInitialValue(false);
+        t.setPersistent(false);
+        
+        Delay d = e.createDelay();
+        d.setMath(new ASTNode(5));
+        
+        Priority p = e.createPriority();
+        p.setMath(new ASTNode(1));
+        
+        EventAssignment ea = e.createEventAssignment();
+        ea.setVariable("S1");
+        ea.setMath(new ASTNode(0));
+        
+        String expected = "E2: at 5 after x, priority = 1, t0 = false, persistent = false: S1 = 0;";
+        assertEquals("Should serialize advanced event options", expected, AntimonySerializer.toAntimony(e));
     }
 }
