@@ -252,7 +252,7 @@ public class AntimonySerializerTest {
         ea2.setMath(new ASTNode(5)); 
         
         String result = AntimonySerializer.toAntimony(e);
-        assertEquals("Should serialize Event with multiple assignments", "E1: at (time+delay): S1 = 0, S2 = 5;", result);
+        assertEquals("Should serialize Event with multiple assignments", "E1: at time+delay: S1 = 0, S2 = 5;", result);
     }
 
     @Test
@@ -285,7 +285,7 @@ public class AntimonySerializerTest {
         ea.setVariable("S1");
         ea.setMath(new ASTNode(0));
         
-        String expected = "E2: at (x), delay=5, priority=1, t0=false, persistent=false: S1 = 0;";
+        String expected = "E2: at 5 after x, priority=1, t0=false, persistent=false: S1 = 0;";
         assertEquals("Should serialize advanced event options", expected, AntimonySerializer.toAntimony(e));
     }
 }

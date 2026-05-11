@@ -258,16 +258,19 @@ public class AntimonySerializer {
             ant.append(e.getId()).append(": ");
         }
 
-        ant.append("at (");
-        if (e.isSetTrigger() && e.getTrigger().isSetMath()) {
+        ant.append("at ");
+        boolean hasTrigger = e.isSetTrigger() && e.getTrigger().isSetMath();
+        boolean hasDelay = e.isSetDelay() && e.getDelay().isSetMath();
+
+        if (hasDelay && hasTrigger) {
+            ant.append(ASTNode.formulaToString(e.getDelay().getMath()));
+            ant.append(" after ");
+            ant.append(ASTNode.formulaToString(e.getTrigger().getMath()));
+        } else if (hasTrigger) {
             ant.append(ASTNode.formulaToString(e.getTrigger().getMath()));
         }
-        ant.append(")");
 
         // Advanced Event Options
-        if (e.isSetDelay() && e.getDelay().isSetMath()) {
-            ant.append(", delay=").append(ASTNode.formulaToString(e.getDelay().getMath()));
-        }
         if (e.isSetPriority() && e.getPriority().isSetMath()) {
             ant.append(", priority=").append(ASTNode.formulaToString(e.getPriority().getMath()));
         }
