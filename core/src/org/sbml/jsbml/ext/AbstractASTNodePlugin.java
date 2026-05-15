@@ -355,4 +355,16 @@ public abstract class AbstractASTNodePlugin extends AbstractTreeNode implements 
     return new TreeMap<String, String>();
   }
 
+  /**
+     * Accepts a generic visitor to traverse this component.
+     *
+     * @param <T> the return type of the visitor
+     * @param visitor the visitor implementation
+     * @return the result of the visitor operation
+     */
+    @Override
+    public <T> T accept(org.sbml.jsbml.TreeNodeVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
 }
