@@ -3,6 +3,14 @@ package org.sbml.jsbml.util;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests for the {@link AntimonyConstants} interface.
+ * Ensures that core Antimony keywords and operators remain safely unchanged 
+ * to prevent parser regressions.
+ *
+ * @author Deepak Yadav
+ */
+
 public class AntimonyConstantsTest {
 
     @Test
