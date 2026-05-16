@@ -31,6 +31,7 @@ import org.sbml.jsbml.ASTNode;
 import org.sbml.jsbml.AbstractTreeNode;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBase;
+import org.sbml.jsbml.TreeNodeVisitor;
 import org.sbml.jsbml.util.TreeNodeChangeEvent;
 
 /**
@@ -363,7 +364,7 @@ public abstract class AbstractASTNodePlugin extends AbstractTreeNode implements 
      * @return the result of the visitor operation
      */
     @Override
-    public <T> T accept(org.sbml.jsbml.TreeNodeVisitor<T> visitor) {
+    public <T> T accept(TreeNodeVisitor<T> visitor) {
         return visitor.visit(this);
     }
 

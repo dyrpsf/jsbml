@@ -1,12 +1,14 @@
 package org.sbml.jsbml;
 
 import org.sbml.jsbml.util.TreeNodeWithChangeSupport;
+
 /**
  * A generic visitor interface for traversing the JSBML tree structure.
- * This allows external classes to operate on SBML components without 
+ * This allows external classes to operate on SBML components without
  * modifying the core classes.
  *
- * @param <T> The return type of the visitor operations.
+ * @param <T> The return type of the visitor operations. Note that this generic 
+ * type may also be {@link Void} if nothing is to be returned.
  * @author Deepak Yadav
  */
 public interface TreeNodeVisitor<T> {

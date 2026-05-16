@@ -22,6 +22,7 @@ package org.sbml.jsbml.ext.render;
 import javax.swing.tree.TreeNode;
 
 import org.sbml.jsbml.AbstractTreeNode;
+import org.sbml.jsbml.TreeNodeVisitor;
 import org.sbml.jsbml.ext.layout.BoundingBox;
 
 /**
@@ -337,7 +338,7 @@ public class RelAbsVector extends AbstractTreeNode {
      * @return the result of the visitor operation
      */
     @Override
-    public <T> T accept(org.sbml.jsbml.TreeNodeVisitor<T> visitor) {
+    public <T> T accept(TreeNodeVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
